@@ -1,4 +1,4 @@
-# UG12: LANY Ticket Promotor
+# UG12: LANY "A Beautiful Blur" World Tour
 
 ## Deskripsi Singkat
 Aplikasi ini merupakan sistem manajemen inventaris tiket konser LANY. Karena integritas data tiket sangat krusial, koneksi ke database dan manajemen sesi login harus terpusat. Anda ditugaskan untuk mengimplementasikan **Singleton Design Pattern** agar akses ke database dan manajemen sesi (login) terpusat, aman, dan tidak menyebabkan kebocoran koneksi atau memori.

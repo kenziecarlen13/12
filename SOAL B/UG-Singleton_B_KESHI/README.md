@@ -1,4 +1,4 @@
-# UG12: KESHI Ticket Promotor
+# UG12: KESHI "Requiem" Tour
 
 ## Deskripsi Singkat
 Aplikasi ini merupakan sistem manajemen inventaris tiket konser KESHI "Requiem" Tour. Karena integritas data ketersediaan kursi tiket sangat krusial, koneksi ke database dan manajemen sesi login harus terpusat. Anda ditugaskan untuk mengimplementasikan **Singleton Design Pattern** agar akses ke database dan manajemen sesi (login) terpusat, aman, dan tidak menyebabkan kebocoran koneksi atau memori.
