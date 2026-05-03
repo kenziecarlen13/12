@@ -38,7 +38,7 @@ public class KeshiInventoryController implements Initializable {
     private TableColumn<TicketTier, Integer> colAvailability;
     @FXML
     public TextField searchBox;
-    TicketTier selectedBooking;
+    TicketTier selectedTicketTier;
     private Connection connection;
 
     @Override
@@ -57,9 +57,9 @@ public class KeshiInventoryController implements Initializable {
         getAllData();
         table.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TicketTier>() {
             @Override
-            public void changed(ObservableValue<? extends TicketTier> observableValue, TicketTier oldBooking, TicketTier newBooking) {
+            public void changed(ObservableValue<? extends TicketTier> observableValue, TicketTier oldItem, TicketTier newItem) {
                 if (observableValue.getValue() != null) {
-                    selectedBooking = observableValue.getValue();
+                    selectedTicketTier = observableValue.getValue();
                     txtTierName.setText(observableValue.getValue().getTierName());
                     txtPrice.setText(String.valueOf(observableValue.getValue().getPrice()));
                     txtAvailability.setText(String.valueOf(observableValue.getValue().getAvailability()));
@@ -110,16 +110,16 @@ public class KeshiInventoryController implements Initializable {
     }
 
     private Predicate<TicketTier> createPredicate(String searchText) {
-        return TicketTier -> {
+        return tier -> {
             if (searchText == null || searchText.isEmpty()) return true;
-            return searchFindsBooking(TicketTier, searchText);
+            return searchFindsTicketTier(tier, searchText);
         };
     }
 
-    private boolean searchFindsBooking(TicketTier TicketTier, String searchText) {
-        return TicketTier.getTierName().toLowerCase().contains(searchText.toLowerCase()) ||
-                String.valueOf(TicketTier.getPrice()).contains(searchText) ||
-                String.valueOf(TicketTier.getAvailability()).contains(searchText);
+    private boolean searchFindsTicketTier(TicketTier tier, String searchText) {
+        return tier.getTierName().toLowerCase().contains(searchText.toLowerCase()) ||
+                String.valueOf(tier.getPrice()).contains(searchText) ||
+                String.valueOf(tier.getAvailability()).contains(searchText);
     }
 
     private void getAllData() {
@@ -145,14 +145,14 @@ public class KeshiInventoryController implements Initializable {
         txtAvailability.clear();
         txtTierName.requestFocus();
         table.getSelectionModel().clearSelection();
-        selectedBooking = null;
+        selectedTicketTier = null;
     }
 
-    private boolean isBookingUpdated() {
-        if (selectedBooking == null) return false;
-        return !selectedBooking.getTierName().equalsIgnoreCase(txtTierName.getText()) ||
-                !String.valueOf(selectedBooking.getPrice()).equalsIgnoreCase(txtPrice.getText()) ||
-                !String.valueOf(selectedBooking.getAvailability()).equalsIgnoreCase(txtAvailability.getText());
+    private boolean isTicketTierUpdated() {
+        if (selectedTicketTier == null) return false;
+        return !selectedTicketTier.getTierName().equalsIgnoreCase(txtTierName.getText()) ||
+                !String.valueOf(selectedTicketTier.getPrice()).equalsIgnoreCase(txtPrice.getText()) ||
+                !String.valueOf(selectedTicketTier.getAvailability()).equalsIgnoreCase(txtAvailability.getText());
     }
 
     @FXML
@@ -161,14 +161,14 @@ public class KeshiInventoryController implements Initializable {
             String tierName = txtTierName.getText();
             Double price = Double.parseDouble(txtPrice.getText());
             Integer availability = Integer.parseInt(txtAvailability.getText());
-            if (isBookingUpdated()) {
-                if (updateBooking(selectedBooking, new TicketTier(selectedBooking.getId(), tierName, price, availability))) {
+            if (isTicketTierUpdated()) {
+                if (updateTicketTier(selectedTicketTier, new TicketTier(selectedTicketTier.getId(), tierName, price, availability))) {
                     new Alert(Alert.AlertType.INFORMATION, "TicketTier Dirubah!").show();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "TicketTier gagal Dirubah!").show();
                 }
             } else {
-                if (addBooking(new TicketTier(tierName, price, availability))) {
+                if (addTicketTier(new TicketTier(tierName, price, availability))) {
                     new Alert(Alert.AlertType.INFORMATION, "TicketTier Ditambahkan!").show();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "TicketTier gagal Ditambahkan!").show();
@@ -193,18 +193,18 @@ public class KeshiInventoryController implements Initializable {
 
     @FXML
     protected void onBtnHapus() {
-        if (selectedBooking != null && deleteBooking(selectedBooking)) {
+        if (selectedTicketTier != null && deleteTicketTier(selectedTicketTier)) {
             new Alert(Alert.AlertType.INFORMATION, "TicketTier Dihapus!").show();
             bersihkan();
         }
     }
 
-    public boolean deleteBooking(TicketTier TicketTier) {
+    public boolean deleteTicketTier(TicketTier tier) {
         String query = "DELETE FROM ticket_inventory WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, TicketTier.getId());
+            ps.setInt(1, tier.getId());
             if (ps.executeUpdate() > 0) {
-                getObservableList().remove(TicketTier);
+                getObservableList().remove(tier);
                 return true;
             }
         } catch (SQLException e) {
@@ -213,7 +213,7 @@ public class KeshiInventoryController implements Initializable {
         return false;
     }
 
-    private boolean addBooking(TicketTier TicketTier) {
+    private boolean addTicketTier(TicketTier tier) {
         String queryGetNextId = "SELECT seq FROM SQLITE_SEQUENCE WHERE name = 'ticket_inventory' LIMIT 1";
         String queryInsert = "INSERT INTO ticket_inventory (tier_name, price, availability) VALUES (?, ?, ?)";
         try {
@@ -222,12 +222,12 @@ public class KeshiInventoryController implements Initializable {
                  PreparedStatement insertStmt = connection.prepareStatement(queryInsert)) {
                 ResultSet rs = getNextIdStmt.executeQuery();
                 int nextId = rs.next() ? rs.getInt("seq") + 1 : 1;
-                insertStmt.setString(1, TicketTier.getTierName());
-                insertStmt.setDouble(2, TicketTier.getPrice());
-                insertStmt.setInt(3, TicketTier.getAvailability());
+                insertStmt.setString(1, tier.getTierName());
+                insertStmt.setDouble(2, tier.getPrice());
+                insertStmt.setInt(3, tier.getAvailability());
                 if (insertStmt.executeUpdate() > 0) {
-                    TicketTier.setId(nextId);
-                    getObservableList().add(TicketTier);
+                    tier.setId(nextId);
+                    getObservableList().add(tier);
                     connection.commit();
                     return true;
                 }
@@ -243,16 +243,16 @@ public class KeshiInventoryController implements Initializable {
         return false;
     }
 
-    private boolean updateBooking(TicketTier oldBooking, TicketTier newBooking) {
+    private boolean updateTicketTier(TicketTier oldTier, TicketTier newTier) {
         String query = "UPDATE ticket_inventory SET tier_name = ?, price = ?, availability = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, newBooking.getTierName());
-            ps.setDouble(2, newBooking.getPrice());
-            ps.setInt(3, newBooking.getAvailability());
-            ps.setInt(4, oldBooking.getId());
+            ps.setString(1, newTier.getTierName());
+            ps.setDouble(2, newTier.getPrice());
+            ps.setInt(3, newTier.getAvailability());
+            ps.setInt(4, oldTier.getId());
             if (ps.executeUpdate() > 0) {
-                int idx = getObservableList().indexOf(oldBooking);
-                getObservableList().set(idx, newBooking);
+                int idx = getObservableList().indexOf(oldTier);
+                getObservableList().set(idx, newTier);
                 return true;
             }
         } catch (SQLException e) {

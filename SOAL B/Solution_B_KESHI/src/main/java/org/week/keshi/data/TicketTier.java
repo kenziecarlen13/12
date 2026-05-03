@@ -6,22 +6,9 @@ public class TicketTier {
     private Double price;
     private Integer availability;
 
-    public TicketTier(String tierName, Double price) {
-        this.tierName = tierName;
-        this.price = price;
-    }
-
-    public TicketTier(int id, String tierName, Double price) {
-        this.id = id;
-        this.tierName = tierName;
-        this.price = price;
-    }
-
     public TicketTier(int id, String tierName, Double price, Integer availability) {
+        this(tierName, price, availability);
         this.id = id;
-        this.tierName = tierName;
-        this.price = price;
-        this.availability = availability;
     }
 
     public TicketTier(String tierName, Double price, Integer availability) {

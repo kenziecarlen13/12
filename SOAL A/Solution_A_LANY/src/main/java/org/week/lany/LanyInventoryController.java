@@ -150,9 +150,9 @@ public class LanyInventoryController implements Initializable {
 
     private boolean isTicketUpdated() {
         if (selectedTicket == null) return false;
-        return !selectedticket.getSectionName().equalsIgnoreCase(txtSectionName.getText()) ||
-                !String.valueOf(selectedticket.getPrice()).equalsIgnoreCase(txtPrice.getText()) ||
-                !String.valueOf(selectedticket.getStock()).equalsIgnoreCase(txtStock.getText());
+        return !selectedTicket.getSectionName().equalsIgnoreCase(txtSectionName.getText()) ||
+                !String.valueOf(selectedTicket.getPrice()).equalsIgnoreCase(txtPrice.getText()) ||
+                !String.valueOf(selectedTicket.getStock()).equalsIgnoreCase(txtStock.getText());
     }
 
     @FXML
@@ -162,7 +162,7 @@ public class LanyInventoryController implements Initializable {
             Double price = Double.parseDouble(txtPrice.getText());
             Integer stock = Integer.parseInt(txtStock.getText());
             if (isTicketUpdated()) {
-                if (updateTicket(selectedTicket, new Ticket(selectedticket.getId(), sectionName, price, stock))) {
+                if (updateTicket(selectedTicket, new Ticket(selectedTicket.getId(), sectionName, price, stock))) {
                     new Alert(Alert.AlertType.INFORMATION, "Ticket Dirubah!").show();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Ticket gagal Dirubah!").show();
@@ -246,10 +246,10 @@ public class LanyInventoryController implements Initializable {
     private boolean updateTicket(Ticket oldTicket, Ticket newTicket) {
         String query = "UPDATE tickets SET section_name = ?, price = ?, stock = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, newticket.getSectionName());
-            ps.setDouble(2, newticket.getPrice());
-            ps.setInt(3, newticket.getStock());
-            ps.setInt(4, oldticket.getId());
+            ps.setString(1, newTicket.getSectionName());
+            ps.setDouble(2, newTicket.getPrice());
+            ps.setInt(3, newTicket.getStock());
+            ps.setInt(4, oldTicket.getId());
             if (ps.executeUpdate() > 0) {
                 int idx = getObservableList().indexOf(oldTicket);
                 getObservableList().set(idx, newTicket);

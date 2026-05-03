@@ -6,22 +6,11 @@ public class Ticket {
     private Double price;
     private Integer stock;
 
-    public Ticket(String sectionName, Double price) {
-        this.sectionName = sectionName;
-        this.price = price;
-    }
 
-    public Ticket(int id, String sectionName, Double price) {
-        this.id = id;
-        this.sectionName = sectionName;
-        this.price = price;
-    }
 
     public Ticket(int id, String sectionName, Double price, Integer stock) {
+        this(sectionName, price, stock);
         this.id = id;
-        this.sectionName = sectionName;
-        this.price = price;
-        this.stock = stock;
     }
 
     public Ticket(String sectionName, Double price, Integer stock) {

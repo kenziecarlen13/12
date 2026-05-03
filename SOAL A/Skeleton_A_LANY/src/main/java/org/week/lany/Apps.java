@@ -15,7 +15,7 @@ public class Apps extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
-        primaryStage.setTitle("Title");
+        primaryStage.setTitle("LANY Ticket Promotor");
         primaryStage.setScene(new Scene(loadFXML("login-view")));
         primaryStage.show();
     }
