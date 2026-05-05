@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KeshiSessionManager {
+    // TODO: Deklarasikan atribut statis privat untuk menyimpan instance dari kelas ini (Singleton).
+
     private String currentUser;
     private String username;
     private String role;
     private Map<String, Integer> ticketClickCounter = new HashMap<>();
 
     public KeshiSessionManager() {
+        // TODO: Ubah modifier konstruktor menjadi private untuk mencegah instansiasi eksternal.
     }
 
     public static KeshiSessionManager getInstance() {
