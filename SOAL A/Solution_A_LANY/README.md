@@ -1,25 +1,27 @@
-# UG12: LANY "A Beautiful Blur" World Tour
+# Aplikasi Manajemen Tiket Konser LANY - Singleton Implementation
 
-## Deskripsi Singkat
-Aplikasi ini merupakan sistem manajemen inventaris tiket konser LANY. Karena integritas data tiket sangat krusial, koneksi ke database dan manajemen sesi login harus terpusat. Anda ditugaskan untuk mengimplementasikan **Singleton Design Pattern** agar akses ke database dan manajemen sesi (login) terpusat, aman, dan tidak menyebabkan kebocoran koneksi atau memori.
+## 1. Deskripsi Proyek
+Aplikasi manajemen tiket konser LANY berbasis JavaFX dengan arsitektur dua arah (Admin dan User). Proyek ini mewajibkan penggunaan Design Pattern Singleton untuk pengelolaan koneksi database SQLite (`lany_tickets.db`) serta manajemen sesi (stateful tracking) aktivitas pengguna selama aplikasi berjalan.
 
-## Daftar Tugas
+## 2. Instruksi Pengerjaan & Daftar File
+Selesaikan blok kode `// TODO` pada file-file berikut (Catatan: Pada versi Solution, kode ini sudah terimplementasi sebagai referensi):
 
-Anda hanya perlu melengkapi dua file yang berada di dalam package `org.week.lany` yang memiliki tag `// TODO`:
+- **LanyDBConnection.java**: Implementasikan pola Singleton Thread-Safe dan tulis query JDBC (SELECT, INSERT) untuk validasi login serta pendaftaran user baru.
+- **LanySessionManager.java**: Bangun struktur Singleton dan logika perekaman klik tiket ke dalam objek Map. Pastikan data tracking tidak terhapus saat fungsi `logout()` dipanggil.
+- **LoginController.java**: Implementasikan otentikasi ganda. Akun `admin`/`admin` sebagai Admin statis, dan akun lain divalidasi ke database sebagai User.
+- **LanyInventoryController.java**: Atur proteksi UI (nonaktifkan input/tombol edit jika role adalah 'User') dan hubungkan event listener tabel ke fungsi perekaman klik di `SessionManager`.
+- **PieChartController.java**: Sinkronisasikan data grafik agar mengambil sumber data langsung dari objek Map di `SessionManager`.
 
-### 1. `LanyDBConnection.java`
-Tugas Anda adalah merubah kelas ini menjadi Singleton *Thread-Safe* untuk mengelola koneksi SQLite ke database `lany_tickets.db`.
-- **Atribut Static**: Buat sebuah atribut `private static Connection instance;`.
-- **Modifikasi Konstruktor**: Ubah *modifier* konstruktor menjadi `private` agar class tidak bisa di-instansiasi secara bebas menggunakan kata kunci `new`.
-- **Implementasi `getInstance()`**: Lengkapi *method* `public static synchronized Connection getInstance() throws SQLException`. Di dalamnya, periksa apakah `instance` bernilai `null` atau koneksi sudah tertutup (`isClosed()`). Jika ya, inisialisasi koneksi baru dengan `DriverManager.getConnection("jdbc:sqlite:lany_tickets.db")`. Terakhir, kembalikan `instance`.
+## 3. Bobot Penilaian (Total 100 Poin)
+| Kriteria Penilaian | Bobot |
+| :--- | :---: |
+| Implementasi Singleton Connection & JDBC Query | 25 Poin |
+| Implementasi Singleton Session & Logika Tracking | 20 Poin |
+| Logika Autentikasi & Pemisahan Role (Admin/User) | 15 Poin |
+| Proteksi Antarmuka (UI) & Integrasi Event Listener | 25 Poin |
+| Visualisasi Data Statistik dari Singleton | 15 Poin |
 
-### 2. `LanySessionManager.java`
-Tugas Anda adalah merubah kelas ini menjadi Singleton *Thread-Safe* untuk menyimpan data pengguna yang sedang login.
-- **Atribut Static**: Buat sebuah atribut `private static LanySessionManager instance;`.
-- **Modifikasi Konstruktor**: Ubah *modifier* konstruktor menjadi `private`.
-- **Implementasi `getInstance()`**: Lengkapi *method* `public static synchronized LanySessionManager getInstance()`. Di dalamnya, periksa apakah `instance` bernilai `null`. Jika ya, buat objek `LanySessionManager` baru. Terakhir, kembalikan `instance`.
-
-## Informasi Login
-Gunakan kredensial berikut untuk melakukan pengujian saat aplikasi dijalankan:
-- **Username**: `admin`
-- **Password**: `admin`
+## 4. Skenario Pengujian
+- **Kasus 1 (Auth & DB)**: Login sebagai admin statis, logout, lalu daftarkan akun baru via UI. Verifikasi akun baru berhasil login sebagai User.
+- **Kasus 2 (Role Protection)**: Saat login sebagai User, pastikan kolom Nama, Harga, Stok, serta tombol Simpan/Hapus dalam kondisi disabled.
+- **Kasus 3 (Persistence Singleton)**: Login sebagai User -> Klik beberapa tiket di tabel -> Logout -> Login kembali sebagai Admin -> Buka Grafik. Verifikasi data klik User tadi muncul secara akurat di Pie Chart (Membuktikan data tersimpan di memori Singleton).

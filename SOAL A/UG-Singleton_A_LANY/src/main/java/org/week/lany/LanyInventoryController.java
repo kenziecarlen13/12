@@ -38,6 +38,10 @@ public class LanyInventoryController implements Initializable {
     private TableColumn<Ticket, Integer> colStock;
     @FXML
     public TextField searchBox;
+    @FXML
+    private Button btnSimpan;
+    @FXML
+    private Button btnHapus;
     Ticket selectedTicket;
     private Connection connection;
 
@@ -63,10 +67,14 @@ public class LanyInventoryController implements Initializable {
                     txtSectionName.setText(observableValue.getValue().getSectionName());
                     txtPrice.setText(String.valueOf(observableValue.getValue().getPrice()));
                     txtStock.setText(String.valueOf(observableValue.getValue().getStock()));
+
+                    // TODO: Panggil metode pada SessionManager untuk mencatat histori klik pengguna terhadap tiket yang dipilih.
                 }
             }
         });
         bersihkan();
+
+        // TODO: Ambil role dari SessionManager. Jika role pengguna adalah 'User', nonaktifkan (disable) TextField input (Nama Tiket, Harga, Stok/Ketersediaan) beserta tombol Simpan dan Hapus.
     }
 
     public Connection getConnection() {
@@ -182,6 +190,11 @@ public class LanyInventoryController implements Initializable {
 
     @FXML
     protected void onBtnGrafik() throws IOException {
+        // Hanya Admin yang dapat melihat Pie Chart
+        if (!"Admin".equals(LanySessionManager.getInstance().getRole())) {
+            new Alert(Alert.AlertType.WARNING, "Akses ditolak! Hanya Admin yang dapat melihat Pie Chart.").show();
+            return;
+        }
         Apps.openViewWithModal("pie-chart-view", "Pie Chart", false);
     }
 
@@ -265,5 +278,11 @@ public class LanyInventoryController implements Initializable {
     protected void onActionMenuAbout() throws IOException {
         Apps.openViewWithModal("about-view", "About Program", false);
     }
-}
 
+    @FXML
+    protected void onActionLogOut() throws IOException {
+        // TODO: Implementasikan logika logout.
+        // 1. Panggil method logout di LanySessionManager.
+        // 2. Kembalikan tampilan ke login-view menggunakan Apps.setRoot().
+    }
+}

@@ -24,6 +24,6 @@
       <TextField fx:id="txtUsername" layoutX="119.0" layoutY="69.0" promptText="Username" />
       <PasswordField fx:id="txtPassword" layoutX="119.0" layoutY="106.0" promptText="Password" />
       <Button fx:id="btnLogin" layoutX="119.0" layoutY="144.0" mnemonicParsing="false" onAction="#btnLoginClick" text="Login" />
-      <Hyperlink fx:id="lblForgot" layoutX="172.0" layoutY="144.0" text="Forget Password" />
+      <Hyperlink fx:id="lblRegister" layoutX="172.0" layoutY="144.0" onAction="#btnRegisterClick" text="Register" />
    </children>
 </AnchorPane>

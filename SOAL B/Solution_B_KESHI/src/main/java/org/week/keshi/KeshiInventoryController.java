@@ -38,6 +38,10 @@ public class KeshiInventoryController implements Initializable {
     private TableColumn<TicketTier, Integer> colAvailability;
     @FXML
     public TextField searchBox;
+    @FXML
+    private Button btnSimpan;
+    @FXML
+    private Button btnHapus;
     TicketTier selectedTicketTier;
     private Connection connection;
 
@@ -63,10 +67,24 @@ public class KeshiInventoryController implements Initializable {
                     txtTierName.setText(observableValue.getValue().getTierName());
                     txtPrice.setText(String.valueOf(observableValue.getValue().getPrice()));
                     txtAvailability.setText(String.valueOf(observableValue.getValue().getAvailability()));
+
+                    // Catat klik tiket ke SessionManager (Hanya untuk User)
+                    if ("User".equals(KeshiSessionManager.getInstance().getRole())) {
+                        KeshiSessionManager.getInstance().incrementClick(observableValue.getValue().getTierName());
+                    }
                 }
             }
         });
         bersihkan();
+
+        // UI Protection: Disable input fields and buttons if role is 'User'
+        if ("User".equals(KeshiSessionManager.getInstance().getRole())) {
+            txtTierName.setDisable(true);
+            txtPrice.setDisable(true);
+            txtAvailability.setDisable(true);
+            btnSimpan.setDisable(true);
+            btnHapus.setDisable(true);
+        }
     }
 
     public Connection getConnection() {
@@ -182,6 +200,11 @@ public class KeshiInventoryController implements Initializable {
 
     @FXML
     protected void onBtnGrafik() throws IOException {
+        // Hanya Admin yang dapat melihat Pie Chart
+        if (!"Admin".equals(KeshiSessionManager.getInstance().getRole())) {
+            new Alert(Alert.AlertType.WARNING, "Akses ditolak! Hanya Admin yang dapat melihat Pie Chart.").show();
+            return;
+        }
         Apps.openViewWithModal("pie-chart-view", "Pie Chart", false);
     }
 
@@ -265,5 +288,10 @@ public class KeshiInventoryController implements Initializable {
     protected void onActionMenuAbout() throws IOException {
         Apps.openViewWithModal("about-view", "About Program", false);
     }
-}
 
+    @FXML
+    protected void onActionLogOut() throws IOException {
+        KeshiSessionManager.getInstance().logout();
+        Apps.setRoot("login-view", "KESHI Ticket Promotor", false);
+    }
+}

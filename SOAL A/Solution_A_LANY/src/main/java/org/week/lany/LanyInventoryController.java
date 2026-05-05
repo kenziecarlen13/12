@@ -38,6 +38,10 @@ public class LanyInventoryController implements Initializable {
     private TableColumn<Ticket, Integer> colStock;
     @FXML
     public TextField searchBox;
+    @FXML
+    private Button btnSimpan;
+    @FXML
+    private Button btnHapus;
     Ticket selectedTicket;
     private Connection connection;
 
@@ -63,10 +67,24 @@ public class LanyInventoryController implements Initializable {
                     txtSectionName.setText(observableValue.getValue().getSectionName());
                     txtPrice.setText(String.valueOf(observableValue.getValue().getPrice()));
                     txtStock.setText(String.valueOf(observableValue.getValue().getStock()));
+
+                    // Catat klik tiket ke SessionManager (Hanya untuk User)
+                    if ("User".equals(LanySessionManager.getInstance().getRole())) {
+                        LanySessionManager.getInstance().incrementClick(observableValue.getValue().getSectionName());
+                    }
                 }
             }
         });
         bersihkan();
+
+        // UI Protection: Disable input fields and buttons if role is 'User'
+        if ("User".equals(LanySessionManager.getInstance().getRole())) {
+            txtSectionName.setDisable(true);
+            txtPrice.setDisable(true);
+            txtStock.setDisable(true);
+            btnSimpan.setDisable(true);
+            btnHapus.setDisable(true);
+        }
     }
 
     public Connection getConnection() {
@@ -182,6 +200,11 @@ public class LanyInventoryController implements Initializable {
 
     @FXML
     protected void onBtnGrafik() throws IOException {
+        // Hanya Admin yang dapat melihat Pie Chart
+        if (!"Admin".equals(LanySessionManager.getInstance().getRole())) {
+            new Alert(Alert.AlertType.WARNING, "Akses ditolak! Hanya Admin yang dapat melihat Pie Chart.").show();
+            return;
+        }
         Apps.openViewWithModal("pie-chart-view", "Pie Chart", false);
     }
 
@@ -265,5 +288,10 @@ public class LanyInventoryController implements Initializable {
     protected void onActionMenuAbout() throws IOException {
         Apps.openViewWithModal("about-view", "About Program", false);
     }
-}
 
+    @FXML
+    protected void onActionLogOut() throws IOException {
+        LanySessionManager.getInstance().logout();
+        Apps.setRoot("login-view", "LANY Ticket Promotor", false);
+    }
+}

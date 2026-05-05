@@ -9,7 +9,7 @@
      <menus>
        <Menu mnemonicParsing="false" text="Edit">
          <items>
-           <MenuItem mnemonicParsing="false" text="Log Out" />
+           <MenuItem mnemonicParsing="false" onAction="#onActionLogOut" text="Log Out" />
          </items>
        </Menu>
        <Menu mnemonicParsing="false" text="Help">
